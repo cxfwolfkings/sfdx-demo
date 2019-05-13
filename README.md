@@ -259,7 +259,7 @@ LTS支持使用标准JavaScript测试框架进行测试。它提供了易于使�
 ### 写Apex
 
 | 操作 | 结果类 |
-| :---: | :---: |
+| --- | --- |
 |insert|SaveResult|
 |upsert|UpsertResult|
 |merge|MergeResult|
@@ -267,6 +267,28 @@ LTS支持使用标准JavaScript测试框架进行测试。它提供了易于使�
 |undelete|UndeleteResult|
 |convertLead|LeadConvertResult|
 |emptyRecycleBin|EmptyRecycleBinResult|
+
+在Apex中，您可以使用**update**在更新sObject记录时锁定它们以防止竞争条件和其他线程安全问题。
+`Account [] accts = [SELECT Id FROM Account LIMIT 2 FOR UPDATE];`
+
+### SOQL 和 SOSL
+
+SOQL语句返回sObjects列表，单个sObject或`count`方法查询得到的Integer
+
+```java
+List<Account> aa = [SELECT Id, Name FROM Account WHERE Name = 'Acme'];
+// 如果可以确定只有单条返回记录，可以直接在SOQL语句后用"."获取字段！
+// 但是如果没有记录或超过一条就报错！
+Contact c = new Contact(Account = [SELECT Name FROM Account WHERE NumberOfEmployees > 10 LIMIT 1]);
+Integer i = [SELECT COUNT() FROM Contact WHERE LastName = 'Weissman'];
+```
+
+SOSL语句返回sObject列表的列表，其中每个列表包含特定sObject类型的搜索结果。结果列表的返回顺序与SOSL查询中指定的顺序相同
+
+```java
+List<List<SObject>> searchList = [FIND 'map*' IN ALL FIELDS RETURNING Account (Id, Name), Contact, Opportunity, Lead];
+// 等价于：FIND {map*} IN ALL FIELDS RETURNING Account (Id, Name), Contact, Opportunity, Lead
+```
 
 #### 在Apex中使用数据
 

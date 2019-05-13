@@ -521,4 +521,80 @@ public with sharing class ApexDemo01 {
         Database.LeadConvertResult lcr = Database.convertLead(lc);
         System.assert(lcr.isSuccess());
     }
+
+    /**
+     * 通过关系访问sObject
+     * 下面示例中，如果对应Acount不存在，那么Contact插入失败！
+     */
+    public static void test15() {
+        Account refAcct = new Account(externalId__c = '12345');
+        Contact c = new Contact(Account = refAcct, LastName = 'Kay');
+        insert c;
+        // 下面的代码等同于上面，但是因为使用了SOQL语句，所以效率不高
+        // Account refAcct = [SELECT Id FROM Account WHERE externalId__c='12345'];
+        // Contact c = new Contact(Account = refAcct.Id);
+        // insert c;
+    }
+
+    /**
+     * 外键和父子关系SOQL查询
+     */
+    public static void test16() {
+        System.debug([SELECT Account.Name FROM Contact WHERE FirstName = 'Caroline'].Account.Name);
+
+        // Account关联多个Contacts
+        for (Account a : [SELECT Id, Name, (SELECT LastName FROM Contacts)
+                  FROM Account
+                  WHERE Name = 'Acme']) {
+            Contact[] cons = a.Contacts;
+        }
+
+        // The following example also works because we limit to only 1 contact
+        for (Account a : [SELECT Id, Name, (SELECT LastName FROM Contacts LIMIT 1)
+                  FROM Account
+                  WHERE Name = 'testAgg']) {
+            Contact c = a.Contacts;
+        }
+    }
+
+    /**
+     * 统计函数
+     */
+    public static void test17() {
+        AggregateResult[] groupedResults = [SELECT AVG(Amount)aver FROM Opportunity];
+        Object avgAmount = groupedResults[0].get('aver');
+
+        // "expr0"是默认别名
+        AggregateResult[] groupedResults = 
+            [SELECT CampaignId, AVG(Amount)
+            FROM Opportunity
+            GROUP BY CampaignId];
+        for (AggregateResult ar : groupedResults)  {
+            System.debug('Campaign ID' + ar.get('CampaignId'));
+            System.debug('Average amount' + ar.get('expr0'));
+        }
+    }
+
+    /**
+     * 大数据量的处理
+     */
+    public static void test18() {
+        // Account[] accts = [SELECT Id FROM Account];
+        // if the results are too large, this syntax causes a runtime exception
+
+        // Use this format if you are not executing DML statements 
+        // within the for loop
+        for (Account a : [SELECT Id, Name FROM Account 
+                        WHERE Name LIKE 'Acme%']) {
+            // Your code without DML statements here
+        }
+
+        // Use this format for efficiency if you are executing DML statements 
+        // within the for loop
+        for (List<Account> accts : [SELECT Id, Name FROM Account
+                                    WHERE Name LIKE 'Acme%']) {
+            // Your code here
+            update accts;
+        }
+    }
 }
