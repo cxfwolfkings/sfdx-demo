@@ -1,0 +1,5 @@
+<design:component label="Hello World">
+    <design:attribute name="subject" label="Subject" description="Name of the person you want to greet" />
+    <design:attribute name="greeting" label="Greeting" />
+    <!-- <design:attribute name="property1" datasource="apex://Demo05CustomPickList"/> -->
+</design:component>

@@ -3,6 +3,12 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
+            "c/dataform": [
+                "dataform/dataform.js"
+            ],
+            "c/hello": [
+                "hello/hello.js"
+            ],
             "c/myComponent": [
                 "myComponent/myComponent.js"
             ]

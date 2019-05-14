@@ -1,0 +1,8 @@
+<!--
+    simpleTab.cmp
+    The appHostable interface makes the component available as a custom tab.
+-->
+<aura:component implements="force:appHostable">
+    <!-- Simple tab content -->
+    <h1>Lightning Component Tab</h1>
+</aura:component>
