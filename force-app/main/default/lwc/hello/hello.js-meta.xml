@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="hello">
     <apiVersion>45.0</apiVersion>
-    <isExposed>true</isExposed> <!-- Lightning App Builder中能否使用 -->
+    <!-- Lightning App Builder中能否使用 -->
+    <isExposed>true</isExposed>
     <masterLabel>Hello</masterLabel>
     <description>Add a classic greeting to any page.</description>
     <targets>

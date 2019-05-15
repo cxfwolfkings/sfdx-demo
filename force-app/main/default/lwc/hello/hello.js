@@ -1,25 +1,34 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class Hello extends LightningElement {
     @api name;
-    @track firstName = '';
-    @track lastName = '';
+    // Always set the default value for a boolean to false
+    @api show = false;
+    @api privateTitle;
+
+    connectedCallback() {
+        const tabindex = this.getAttribute('tabindex');
+    
+        // Set the tabindex to 0 if it hasn't been set by the consumer.
+        if (!tabindex) {
+            this.setAttribute('tabindex','0');
+        }
+    }
+
+    /**
+     * 将js的properties映射到html的attributes
+     */
+    @api
+    get title() {
+        return this.privateTitle;
+    }
+
+    set title(value) {
+        this.privateTitle = value.toUpperCase();
+        this.setAttribute('title', this.privateTitle);
+    }
 
     handleChangeName(event) {
         this.name = event.target.value;
     }
-
-    handleChangeFullName(event) {
-        const field = event.target.name;
-        if (field === "firstName") {
-            this.firstName = event.target.value;
-        } else if (field === "lastName"){
-            this.lastName = event.target.value;
-        }
-    }
-
-    get uppercasedFullName() {
-        return `${this.firstName} ${this.lastName}`.toUpperCase();
-    }
-
 }

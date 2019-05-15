@@ -1,0 +1,97 @@
+<template>
+    <lightning-card title="Demo01" icon-name="custom:custom14">
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning-input label="First Name" value={name} onchange={handleChangeFullName}></lightning-input>
+            <lightning-input label="Last Name" value={name} onchange={handleChangeFullName}></lightning-input>
+            <p class="slds-m-top_medium">Uppercased Full Name: {uppercasedFullName}</p>
+            <lightning-input type="checkbox" label="Show details" onchange={handleChange}></lightning-input>
+            <!-- 条件分支 -->
+            <template if:true={areDetailsVisible}>
+                <div class="slds-m-vertical_medium">
+                    These are the details!
+                </div>
+            </template>
+            <p class="slds-m-top_medium">使用foreach遍历：</p>
+            <ul class="slds-m-around_medium">
+                <template for:each={contacts} for:item="contact">
+                    <li key={contact.Id}>
+                        {contact.Name}, {contact.Title}
+                    </li>
+                </template>
+            </ul>
+            <p class="slds-m-top_medium">使用iterator遍历：</p>
+            <ul class="slds-m-around_medium">
+                <template iterator:it={contacts}>
+                    <li key={it.value.Id}>
+                        <div if:true={it.first} class="list-first"></div>
+                        {it.value.Name}, {it.value.Title}
+                        <div if:true={it.last} class="list-last"></div>
+                    </li>
+                </template>
+            </ul>
+        </div>
+        <!-- 
+            要设置组件样式，请使用Lightning Design System 或 CSS。
+            Salesforce Lightning Design System是一个CSS框架，提供与Lightning Experience一致的外观。
+            它只适用于在Lightning Experience和Salesforce移动应用程序中运行的Lightning组件。
+            lightning命名空间中的组件已经使用Lightning Design System。例如，下面模板是lightning:tree组件。
+            很容易发现Lightning Design System的风格，因为它的样式以slds为前缀。
+            使用时无需任何导入语句或静态资源。只需将Lightning Design System CSS类分配给HTML元素即可。
+            
+            注意：默认情况下，自定义元素设置为display:inline。（Lightning Web组件也是自定义元素。）
+            如果SLDS样式未按预期呈现，请尝试将组件设置为display:block
+
+            要构建Lightning Web组件，请通过将较小的lightning基本组件组合到更复杂的自定义组件中来构建它。
+            尝试从按钮和媒体对象等组件构建您的设计。通常使用网格和间距类进行布局。
+            向组件添加新功能时，请在Lightning Design System中搜索需要的设计并将其应用于模板。
+        -->
+        <div class="slds-tree_container" role="application">
+            <h4 class="slds-text-title_caps" id="treeheading">{header}</h4>
+            <template if:true={state.node}>
+                <lightning-tree-item class="slds-tree" role="tree" aria-labelledby="treeheading" node={state.node} is-root>
+                </lightning-tree-item>
+            </template>
+        </div>
+        <c-hello show={computedValue}></c-hello>
+        <c-hello title="Hover Over the Component to See Me" tabindex="0"></c-hello>
+
+        <div class="slds-m-around_medium">
+            <lightning-input
+                type="number"
+                label="Principal"
+                value={principal}
+                onchange={principalChange}
+            ></lightning-input>
+            <lightning-combobox
+                label="Term"
+                value={term}
+                onchange={termChange}
+                options={termOptions}
+            >
+            </lightning-combobox>
+            <lightning-input
+                type="number"
+                label="Rate"
+                value={rate}
+                onchange={rateChange}
+            ></lightning-input>
+            <p class="slds-m-vertical_small">
+                <lightning-button
+                    label="Calculate Monthly Payment"
+                    onclick={calculateMonthlyPayment}
+                ></lightning-button>
+            </p>
+            <p>Monthly Payment</p>
+            <lightning-formatted-number
+                format-style="currency"
+                currency-code="USD"
+                value={monthlyPayment}
+            ></lightning-formatted-number>
+            <br />
+        </div>
+        <c-view-source source="lwc/miscSharedJavaScript" slot="footer">
+            Share JavaScript code using JavaScript modules. In this case, the
+            JavaScript module provides the logic to calculate mortgage payments.
+        </c-view-source>
+    </lightning-card>
+</template>

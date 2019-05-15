@@ -1,13 +1,47 @@
 # 学习示例
 
+快速检索`Schema Builder`，查看组织中的所有自定义和标准对象。
+快速检索`Process Builder`，进入流程生成器。
+
+作为Salesforce开发人员，有三种核心编程技术可供学习。
+
+1. Lightning组件框架：类似于AngularJS或React的UI开发框架。
+2. Apex：Salesforce的专有编程语言，具有类似Java的语法。
+3. Visualforce：一种标记语言，允许您创建自定义Salesforce页面，其代码看起来很像HTML，并且可以选择使用Apex和JavaScript的强大组合。
+
+讨论Lightning组件和Visualforce页面之间的区别非常重要。主要区别正是在于名称：
+
+- 使用Lightning组件，您可以开发可拼凑在一起以创建页面的组件。
+- 使用Visualforce，您可以立即开发整个页面。
+
+虽然Lightning组件对于移动开发等内容来说更新，更好，但在某些情况下，使用Visualforce更有意义。
+
+**DreamHouse**是一个示例应用程序，演示了Salesforce App Cloud在构建员工生产力和客户参与应用程序方面的独特价值主张。
+安装：在网站根Url后面添加 `/packagingSetupUI/ipLanding.app?apvId=04tB00000009UeX`
+
+在您的组织中启用Dev Hub：
+
+1. 以系统管理员身份登录Developer Edition，试用版或生产组织（如果您是客户）或您的企业组织（如果您是ISV）。
+2. 从“设置”，“快速查找”框输入Dev Hub并选择。
+   如果在“设置”菜单中未看到Dev Hub，请确保您的组织是受支持的版本之一。
+3. 要启用Dev Hub，请单击“启用”。
+   启用Dev Hub后，您无法**禁用**它。
+
+Dev Hub组织允许您创建，删除和管理Salesforce scratch组织。在本地计算机上设置项目后，可以使用Dev Hub org进行授权，然后才能创建临时组织。
+Dev Hub适用于：Developer，Enterprise，Performance和Unlimited版
+可在以下位置使用的临时组织：Developer，Enterprise，Group和Professional版
+您还可以授权其他现有组织（例如sandbox 或packaging orgs），以便在使用CLI命令时提供更大的灵活性。例如，在使用临时组织开发和测试应用程序之后，您可以将更改部署到集中式沙箱。或者，您可以从现有生产组织中导出数据子集，并将其导入临时组织以进行测试。
+您只授权一次组织。要在开发期间切换orgs，请指定组织的用户名。使用--targetusername（或--targetdevhubusername）CLI命令参数，设置默认用户名或使用别名。
+
 [命令行文档](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_apex.htm#cli_reference_force_apex)
 [代码库](https://github.com/developerforce)
 [代码库](https://github.com/forcedotcom)
 [文档格式](https://github.com/DavidAnson/markdownlint/blob/HEAD/doc/Rules.md)
 
 命令帮助参数：-h
+示例：`sfdx -h`
 
-需要区分Scratch org 和 NonScratch org
+需要区分临时组织(Scratch org)和非临时组织(NonScratch org)。
 
 创建项目 - 通用
 `sfdx force:project:create --projectname lwc-demo1`
@@ -73,11 +107,11 @@ In VS Code, press Command + Shift + P, enter sfdx, and select SFDX: Open Default
 示例代码：[demo01](https://github.com/cxfwolfkings/sfdx-demo/tree/master/force-app/main/default/aura/demo01)
 
 1. 创建自定义标签
-a. 快速检索：Tabs
-b. 新建New Lightning Component Tab
+   a. 快速检索：Tabs
+   b. 新建New Lightning Component Tab
 2. 将组件添加到App Launcher
-a. 快速检索：，选择 App Manager | New Lightning App
-b. 在Select Items界面选择自定义的标签
+   a. 快速检索：，选择 App Manager | New Lightning App
+   b. 在Select Items界面选择自定义的标签
 3. 导航到Lightning Experience中的App Launcher，查看自定义App
 
 ##### 作为Salesforce App的自定义选项卡
@@ -220,8 +254,92 @@ LTS支持使用标准JavaScript测试框架进行测试。它提供了易于使�
 
 ## lightning Web组件
 
-创建Lighting Web组件
+### 创建Lighting Web组件
+
+命令：
 `sfdx force:lightning:component:create --type lwc -n myComponent -d force-app/main/default/lwc`
+关于组件命名空间，参考[这里](https://developer.salesforce.com/docs/component-library/documentation/lwc/lwc.create_components_namespace)。
+关于从Aura组件继承样式，参考[这里](https://developer.salesforce.com/docs/component-library/documentation/lwc/lwc.create_components_css_aura)。
+
+#### 使用css设置样式
+
+要将样式与组件捆绑在一起，请在组件的文件夹中创建样式表。样式表必须与组件具有相同的名称。样式表自动应用于组件。
+每个组件只能有一个样式表。组件无法共享样式表。样式表使用标准CSS语法，您可以使用大多数选择器。
+组件样式表中定义的样式的范围限定为组件。此规则允许组件在不同的上下文中重用，而不会丢失其样式。它还可以防止组件的样式覆盖页面其他部分的样式。
+
+父组件可以设置子组件样式，但是子组件是作为一个单独的元素（子组件内部元素的样式在父组件中是不能设置的）。
+组件样式表中可以设置自身的样式，使用选择器`c-<componentName>` 或 `:host`
+
+child.html
+
+```html
+<template>
+   <h1>To Do Item</h1>
+   <slot></slot>
+</template>
+```
+
+child.css
+
+```css
+h1 {
+    font-size: large;
+}
+:host {
+    display: block;
+    background: lightgray;
+}
+:host(.active) {
+    background-color: lightgreen;
+}
+```
+
+parent.html
+
+```html
+<template>
+    <h1>To Do List</h1>
+    <c-child>Buy potatoes</c-child>
+    <c-child>Donate to a good cause</c-child>
+    <c-child class="active">Plan a party</c-child>
+</template>
+```
+
+parent.css
+
+```css
+h1 {
+    font-size: xx-large;
+}
+```
+
+**注意：**不支持ID选择器
+
+#### 使用js
+
+Property和attribute几乎是可互换的术语，可能会令人困惑。一般来说，在HTML中我们谈论attribute，在JavaScript中我们谈论Property。
+JavaScript中的属性名使用camel case，而HTML属性名称使用kebab case（以破折号分隔）以匹配HTML标准。例如，名为itemName的JavaScript属性映射到名为item-name的HTML属性。
+
+查看[rules](https://developer.salesforce.com/docs/component-library/documentation/lwc/lwc.js_props_names)
+
+要从JavaScript 访问HTML属性`for`，请使用`htmlFor`。
+`ARIA`属性是支持残疾人阅读的技术，获取这些属性也使用camel case。例如：获取aria-checked，使用ariaChecked。
+
+如果Reactive Property的值改变，组件会重新渲染！Reactive Property可以是public或private。
+使用`@api`修饰public property。
+使用`@track`修饰private property。
+属性值从html到js的传递是没有顺序的，所以处理起来要留意！
+
+Lightning Web Components可以监测到reactive properties的以下类型的值：
+
+- 原始值
+- 对象 {…}
+- 数组 []
+
+将js作为控件共享，请看[示例1](./force-app/main/default/lwc/lwcDemo01/lwcDemo01.html)。
+使用第三方js控件，请看[示例2](./force-app/main/default/lwc/lwcDemo02/lwcDemo02.html)。
+
+### 部署lwc
 
 将组件加到一个Lightning页面中
 
@@ -290,7 +408,22 @@ List<List<SObject>> searchList = [FIND 'map*' IN ALL FIELDS RETURNING Account (I
 // 等价于：FIND {map*} IN ALL FIELDS RETURNING Account (Id, Name), Contact, Opportunity, Lead
 ```
 
+可以使用`ALL ROWS`关键字查询回收站中的记录和已归档活动，但不能用于更新
+`System.assertEquals(2, [SELECT COUNT() FROM Contact WHERE AccountId = a.Id ALL ROWS]);`
+
+可以通过[示例代码](./force-app/main/default/classes/ApexDemo01.cls)查看更多用法。
+
 #### 在Apex中使用数据
+
+## Visualforce
+
+**命令**
+创建页面：
+`sfdx force:visualforce:page:create -n pageDemo -l pageDemo -d force-app/main/default/pages`
+
+## API
+
+### Tool API
 
 ## Resources
 

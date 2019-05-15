@@ -200,6 +200,7 @@ public with sharing class ApexDemo01 {
      * 1、Account对象有一个外部ID字段，类型：text，名称：MyExtID
      * 2、MyExtID__c='SAP111111'对应的Account已经存在
      */
+     /*
     @isTest
     public static void test7() {
         Opportunity newOpportunity = new Opportunity(
@@ -216,12 +217,14 @@ public with sharing class ApexDemo01 {
         // Create the opportunity.
         Database.SaveResult results = Database.insert(newOpportunity);
     }
-
+    */
+    
     /**
      * 使用外键在单个语句中创建父记录和子记录
      * 您可以创建最多10级深度的相关记录。此外，在单个调用中创建的相关记录必须具有不同的sObject类型。
      * 此示例需要Account对象上有外部ID文本字段MyExtID。
      */
+    /*
     @isTest
     public static void test8() {
         Date dt = Date.today();
@@ -257,6 +260,7 @@ public with sharing class ApexDemo01 {
             }
         }
     }
+    */
 
     /**
      * 使用 UPSERT 操作，您可以在一次调用中插入或更新现有记录。
@@ -334,6 +338,7 @@ public with sharing class ApexDemo01 {
     /**
      * 使用 UPSERT 和外部 ID 字段 Line_Item_Id__c 在 Asset 对象上维护 Asset 和 OpportunityLineItem 之间的一对一关系
      */
+    /*
     public void upsertExample() {
         Opportunity opp = [SELECT Id, Name, AccountId, 
                               (SELECT Id, PricebookEntry.Product2Id, PricebookEntry.Name 
@@ -352,15 +357,14 @@ public with sharing class ApexDemo01 {
             assets.add(asset);
         }
         try {
-            /*
-             * This line upserts the assets list with the Line_Item_Id__c field specified as the Asset field 
-             * that should be used for matching the record that should be upserted. 
-             */
+             // This line upserts the assets list with the Line_Item_Id__c field specified as the Asset field 
+             // that should be used for matching the record that should be upserted. 
             upsert assets Line_Item_ID__c;  
         } catch (DmlException e) {
             System.debug(e.getMessage());
         }
     }
+    */
 
     /**
      * 合并记录：merge 操作将最多三条记录合并到一条记录中，删除其他记录，并更新任何相关记录。其它注意事项：
@@ -407,6 +411,7 @@ public with sharing class ApexDemo01 {
         System.assertEquals(0, result.size());
     }
 
+    /*
     @isTest
     public static void test11() {
         // Create master account
@@ -467,6 +472,7 @@ public with sharing class ApexDemo01 {
             }
         }
     }
+    */
 
     /**
      * 在数据库中保留记录后，可以使用 delete 删除这些记录。
@@ -526,6 +532,7 @@ public with sharing class ApexDemo01 {
      * 通过关系访问sObject
      * 下面示例中，如果对应Acount不存在，那么Contact插入失败！
      */
+    /*
     public static void test15() {
         Account refAcct = new Account(externalId__c = '12345');
         Contact c = new Contact(Account = refAcct, LastName = 'Kay');
@@ -535,6 +542,7 @@ public with sharing class ApexDemo01 {
         // Contact c = new Contact(Account = refAcct.Id);
         // insert c;
     }
+    */
 
     /**
      * 外键和父子关系SOQL查询
@@ -565,7 +573,7 @@ public with sharing class ApexDemo01 {
         Object avgAmount = groupedResults[0].get('aver');
 
         // "expr0"是默认别名
-        AggregateResult[] groupedResults = 
+        groupedResults = 
             [SELECT CampaignId, AVG(Amount)
             FROM Opportunity
             GROUP BY CampaignId];
@@ -596,5 +604,127 @@ public with sharing class ApexDemo01 {
             // Your code here
             update accts;
         }
+    }
+
+    /**
+     * 通过排除空值来提高性能
+     * getThreadTags: a quick method to pull tags not in the existing list
+     *
+     */
+    /*
+    public static webservice List<String> getThreadTags(String threadId, List<String> tags) {
+        system.debug(LoggingLevel.Debug,tags);
+        List<String> retVals = new List<String>();
+        Set<String> tagSet = new Set<String>();
+        Set<String> origTagSet = new Set<String>();
+        origTagSet.addAll(tags);
+
+        // Note WHERE clause optimizes search where Thread__c is not null
+        for (CSO_CaseThread_Tag__c t : [SELECT Name FROM CSO_CaseThread_Tag__c WHERE Thread__c = :threadId AND Thread__c != null]) {
+            tagSet.add(t.Name);
+        }
+        for(String x : origTagSet) { 
+            // return a minus version of it so the UI knows to clear it
+            if(!tagSet.contains(x)) retVals.add('-' + x);
+        }
+        for(String x : tagSet) { 
+            // return a plus version so the UI knows it's new
+            if(!origTagSet.contains(x)) retvals.add('+' + x);
+        }
+        return retVals;
+    }
+    */
+
+    /**
+     * 在SOQL查询中使用多态关系
+     */
+    public static void test19() {
+        // Event的What关联字段可以是Account、Campaign或Opportunity
+        // 1.用type过滤类型
+        List<Event> events = [SELECT Description FROM Event WHERE What.Type IN ('Account', 'Opportunity')];
+        // 2.用TYPEOF和分支 
+        events = [SELECT TYPEOF What WHEN Account THEN Phone WHEN Opportunity THEN Amount END FROM Event];
+        for (Event myEvent: events) {
+            if (myEvent.What instanceof Account) {
+                // myEvent.What references an Account, so process accordingly
+            } else if (myEvent.What instanceof Opportunity) {
+                // myEvent.What references an Opportunity, so process accordingly
+            }
+        }
+    }
+
+    /**
+     * 变量绑定
+     */
+    public static void bindDemo() {
+        Account A = new Account(Name='xxx');
+        insert A;
+        Account B;
+
+        // A simple bind
+        B = [SELECT Id FROM Account WHERE Id = :A.Id];
+
+        // A bind with arithmetic
+        B = [SELECT Id FROM Account WHERE Name = :('x' + 'xx')];
+
+        String s = 'XXX';
+
+        // A bind with expressions
+        B = [SELECT Id FROM Account WHERE Name = :'XXXX'.substring(0,3)];
+
+        // A bind with an expression that is itself a query result
+        B = [SELECT Id FROM Account WHERE Name = 
+                :[SELECT Name FROM Account WHERE Id = :A.Id].Name];
+
+        Contact C = new Contact(LastName='xxx', AccountId=A.Id);
+        insert new Contact[]{C, new Contact(LastName='yyy', accountId=A.id)};
+
+        // Binds in both the parent and aggregate queries
+        B = [SELECT Id, (SELECT Id FROM Contacts WHERE Id = :C.Id)
+             FROM Account
+             WHERE Id = :A.Id];
+
+        // One contact returned
+        Contact D = B.Contacts;
+
+        // A limit bind
+        Integer i = 1;
+        B = [SELECT Id FROM Account LIMIT :i];
+
+        // An OFFSET bind
+        Integer offsetVal = 10;
+        List<Account> offsetList = [SELECT Id FROM Account OFFSET :offsetVal];
+
+        // An IN-bind with an Id list. Note that a list of sObjects
+        // can also be used--the Ids of the objects are used for the bind
+        Contact[] cc = [SELECT Id FROM Contact LIMIT 2];
+        Task[] tt = [SELECT Id FROM Task WHERE WhoId IN :cc];
+
+        // An IN-bind with a String list
+        String[] ss = new String[]{'a', 'b'};
+        Account[] aa = [SELECT Id FROM Account WHERE AccountNumber IN :ss];
+
+        // A SOSL query with binds in all possible clauses
+
+        String myString1 = 'aaa';
+        String myString2 = 'bbb';
+        Integer myInt3 = 11;
+        String myString4 = 'ccc';
+        Integer myInt5 = 22;
+
+        List<List<SObject>> searchList = [FIND :myString1 IN ALL FIELDS 
+                                          RETURNING 
+                                          Account (Id, Name WHERE Name LIKE :myString2 LIMIT :myInt3), 
+                                          Contact, 
+                                          Opportunity, 
+                                          Lead 
+                                          WITH DIVISION =:myString4
+                                          LIMIT :myInt5];
+
+        // Apex变量绑定不支持 DISTANCE 或 GEOLOCATION 函数的 units 参数。下面的语句不会工作！
+        // String units = 'mi';
+        // List<Account> accountList = [SELECT ID, Name, BillingLatitude, BillingLongitude 
+        //                              FROM Account 
+        //                              WHERE DISTANCE(My_Location_Field__c, GEOLOCATION(10,10), :units) < 10]; 
     }
 }
