@@ -45,13 +45,13 @@
             尝试从按钮和媒体对象等组件构建您的设计。通常使用网格和间距类进行布局。
             向组件添加新功能时，请在Lightning Design System中搜索需要的设计并将其应用于模板。
         -->
-        <div class="slds-tree_container" role="application">
+        <!-- <div class="slds-tree_container" role="application">
             <h4 class="slds-text-title_caps" id="treeheading">{header}</h4>
             <template if:true={state.node}>
                 <lightning-tree-item class="slds-tree" role="tree" aria-labelledby="treeheading" node={state.node} is-root>
                 </lightning-tree-item>
             </template>
-        </div>
+        </div> -->
         <c-hello show={computedValue}></c-hello>
         <c-hello title="Hover Over the Component to See Me" tabindex="0"></c-hello>
 
@@ -89,9 +89,9 @@
             ></lightning-formatted-number>
             <br />
         </div>
-        <c-view-source source="lwc/miscSharedJavaScript" slot="footer">
+        <!-- <c-view-source source="lwc/miscSharedJavaScript" slot="footer">
             Share JavaScript code using JavaScript modules. In this case, the
             JavaScript module provides the logic to calculate mortgage payments.
-        </c-view-source>
+        </c-view-source> -->
     </lightning-card>
 </template>
