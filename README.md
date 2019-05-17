@@ -517,7 +517,19 @@ List<List<SObject>> searchList = [FIND 'map*' IN ALL FIELDS RETURNING Account (I
 
 自定义输入字段标签，请看[示例5](./force-app/main/default/pages/pageDemo05.page)。
 
-设置表单中字段的Tab顺序，请参考[这里](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_input_field_tabindex.htm)。
+设置表单中字段的Tab顺序，请参考[文档](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_input_field_tabindex.htm)。
+
+将依赖字段添加到页面，参考[文档](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_dependent_picklists.htm)。
+
+创建Visualforce仪表板组件，请看[示例6](./force-app/main/default/pages/pageDemo06.page)。
+
+显示自定义对象的相关列表，请参考[文档](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_custom_mapping.htm)。
+
+启用内联编辑，关键属性：`inlineEdit="true"`，具体参考[文档](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_inline_editing.htm)。
+
+将页面作为pdf呈现，关键属性：`renderAs="pdf"`，具体参考[文档](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_renderas_pdf.htm)。
+
+在页面中构建数据表，请看[示例7](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_iteration_components.htm)。
 
 ## API
 
